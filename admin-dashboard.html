@@ -10,7 +10,7 @@
 <body class="bg-gray-100">
 <!-- Sidebar -->
 <div class="flex h-screen">
-    <aside id="sidebar" class="w-64 bg-gray-900 text-white transition-all duration-300">
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white transition-transform duration-300 -translate-x-full lg:translate-x-0">
         <div class="p-6">
             <div class="flex items-center gap-2 mb-8">
                 <i class="fas fa-book text-blue-400 text-2xl"></i>
@@ -29,6 +29,8 @@
                     </div>
                 </div>
             </div>
+            <!-- add overlay for responsive -->
+            <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
 
             <!-- Navigation -->
             <nav class="space-y-2">
@@ -60,13 +62,14 @@
 
             <!-- Logout -->
             <div class="absolute bottom-6 left-6 right-6">
-                <button onclick="logout()" class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg transition">
+                <button onclick="logout()" class=" flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg transition">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </button>
             </div>
         </div>
     </aside>
+    
 
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto">
@@ -191,19 +194,19 @@
                     <div class="bg-white rounded-xl shadow-md p-6">
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h3>
                         <div class="space-y-3">
-                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-semibold transition text-left flex items-center gap-3">
+                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-semibold transition flex items-center gap-3">
                                 <i class="fas fa-plus-circle"></i>
                                 <span>Add New Book</span>
                             </button>
-                            <button class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-semibold transition text-left flex items-center gap-3">
+                            <button class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-semibold transition flex items-center gap-3">
                                 <i class="fas fa-file-export"></i>
                                 <span>Export Orders</span>
                             </button>
-                            <button class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-semibold transition text-left flex items-center gap-3">
+                            <button class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-semibold transition flex items-center gap-3">
                                 <i class="fas fa-envelope"></i>
                                 <span>Send Newsletter</span>
                             </button>
-                            <button class="w-full bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-semibold transition text-left flex items-center gap-3">
+                            <button class="w-full bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-semibold transition flex items-center gap-3">
                                 <i class="fas fa-chart-bar"></i>
                                 <span>Generate Report</span>
                             </button>
@@ -276,21 +279,20 @@
     // Toggle sidebar for mobile
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
         sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
     }
+
+    // Close sidebar when overlay is clicked
+    document.getElementById('sidebar-overlay').addEventListener('click', toggleSidebar);
 
     // Show different sections
     function showSection(section) {
-        // Hide all sections
         document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
-
-        // Remove active class from all nav items
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active', 'bg-gray-800'));
-
-        // Show selected section
         document.getElementById('section-' + section).classList.remove('hidden');
 
-        // Update page title
         const titles = {
             'dashboard': 'Dashboard',
             'books': 'Manage Books',
@@ -303,6 +305,10 @@
 
         // Add active class to clicked nav item
         event.target.closest('.nav-item').classList.add('active', 'bg-gray-800');
+
+        if (window.innerWidth < 1024) {
+            toggleSidebar();
+        }
     }
 
     // Logout function
